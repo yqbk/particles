@@ -1,0 +1,32 @@
+{
+  "name": "particles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --watch --progress",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yqbk/particles.git"
+  },
+  "author": "Jakub Syrek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yqbk/particles/issues"
+  },
+  "homepage": "https://github.com/yqbk/particles#readme",
+  "devDependencies": {
+    "babel-core": "^6.22.1",
+    "babel-eslint": "^7.1.1",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.22.0",
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0",
+    "webpack": "^2.2.1"
+  }
+}
