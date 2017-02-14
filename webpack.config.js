@@ -1,10 +1,9 @@
 const path = require('path')
-const webpack = require('webpack')
 
 module.exports = {
 
   entry: [
-    './app/index'
+    './app/animation'
   ],
 
   output: {

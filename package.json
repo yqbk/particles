@@ -2,7 +2,7 @@
   "name": "particles",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "animation.js",
   "scripts": {
     "build": "webpack --watch --progress",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,5 +28,8 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
     "webpack": "^2.2.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
   }
 }
