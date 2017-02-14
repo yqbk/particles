@@ -7,19 +7,33 @@ const ctx = canvas.getContext('2d')
 const width = window.innerWidth; // eslint-disable-line
 const height = window.innerHeight; // eslint-disable-line
 
+const linkDistance = 150
+const linkThickness = 30
+const animationSpeed = 0.3
+
 ctx.canvas.width = width
 ctx.canvas.height = height
 
 ctx.imageSmoothingEnabled = true
 ctx.strokeStyle = '#ff8ea8'
-ctx.lineWidth = 3
+
+
+function calculateDistance (c1, c2) {
+  const a = (c1.x + c1.direction.dirX) - (c2.x + c2.direction.dirX)
+  const b = (c1.y + c1.direction.dirY) - (c2.y + c2.direction.dirY)
+  return Math.sqrt((a * a) + (b * b))
+}
 
 function detectCollision (c1, c2) {
+  return calculateDistance(c1,c2) <= c1.radius + c2.radius
+}
+
+function detectLink (c1, c2) {
   const a = (c1.x + c1.direction.dirX) - (c2.x + c2.direction.dirX)
   const b = (c1.y + c1.direction.dirY) - (c2.y + c2.direction.dirY)
   const distance = Math.sqrt((a * a) + (b * b))
 
-  return distance <= c1.radius + c2.radius
+  return calculateDistance(c1,c2) <= c1.radius + c2.radius + linkDistance
 }
 
 
@@ -32,12 +46,21 @@ class Circle {
     this.direction = direction
   }
 
-  changeDirectionX() {
+  changeDirectionX () {
     this.direction.dirX = -this.direction.dirX
   }
 
-  changeDirectionY() {
+  changeDirectionY () {
     this.direction.dirY = -this.direction.dirY
+  }
+
+  drawLink (c1, c2) {
+    // ctx.lineWidth = 1
+    ctx.lineWidth = linkThickness / calculateDistance(c1,c2)
+    ctx.beginPath()
+    ctx.moveTo(c1.x, c1.y)
+    ctx.lineTo(c2.x, c2.y)
+    ctx.stroke()
   }
 
   move (grid) {
@@ -53,6 +76,9 @@ class Circle {
             this.changeDirectionX()
             this.changeDirectionY()
         }
+        if (detectLink(circle, this)) {
+          this.drawLink(this, circle)
+        }
       }
     })
 
@@ -65,6 +91,11 @@ class Circle {
       this.changeDirectionY()
     }
     this.y += moveY
+
+    ctx.lineWidth = 3
+    // ctx.fillStyle = 'black'
+    // ctx.fill()
+    this.render(canvas, ctx)
   }
 
   render (c, context) {
@@ -82,7 +113,7 @@ const grid = _.range(0, 30).map(number => new Circle({
   x: Math.floor((Math.random() * 1000) + 50),
   y: Math.floor((Math.random() * 1000) + 50),
   radius: Math.floor((Math.random() * 10) + 5),
-  direction: { dirX: (Math.random() * 2), dirY: (Math.random() * 2) }
+  direction: { dirX: Math.random() * animationSpeed, dirY: Math.random() * animationSpeed}
 }))
 
 // grid[0] = new Circle({ id:0,
@@ -96,7 +127,6 @@ const grid = _.range(0, 30).map(number => new Circle({
 //             y: 100,
 //             radius: 30,
 //             direction: { dirX: -1, dirY: 0 } })
-
 
 
 function animate () {
@@ -113,7 +143,6 @@ function animate () {
   grid.forEach((circle) => {
     // console.log(circle)
     circle.move(grid)
-    circle.render(canvas, ctx)
   })
 }
 
