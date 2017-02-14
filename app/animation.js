@@ -1,15 +1,13 @@
-import _ from 'lodash'
-
 //------------------------------------------------------
 // -----------------Options-----------------------------
 //------------------------------------------------------
 
-const circlesNumber = 30
+const circlesNumber = 100
 const linkDistance = 150
 const linkThickness = 30
 const animationSpeed = 0.3
-const minCircleRadius = 5
-const maxCircleRadius = 10
+const minCircleRadius = 2
+const maxCircleRadius = 7
 
 //------------------------------------------------------
 // -----------------Setup-------------------------------
@@ -131,7 +129,11 @@ function createCircle (number) {
 
 // generate given number of circles
 function generate (elements) {
-  const circles = _.range(0, elements)
+  const circles = []
+
+  for (let i = 0; i < elements; i += 1) {
+    circles.push(i)
+  }
 
   circles.forEach((element) => {
     const id = element
