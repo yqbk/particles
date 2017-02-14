@@ -75,27 +75,27 @@ class Circle {
 }
 
 
-const grid = []
+// const grid = []
 
-// const grid = _.range(0, 30).map(number => new Circle({
-//   id: number,
-//   x: Math.floor((Math.random() * 1000) + 50),
-//   y: Math.floor((Math.random() * 1000) + 50),
-//   radius: Math.floor((Math.random() * 10) + 5),
-//   direction: { dirX: 1, dirY: 0 }
-// }))
+const grid = _.range(0, 30).map(number => new Circle({
+  id: number,
+  x: Math.floor((Math.random() * 1000) + 50),
+  y: Math.floor((Math.random() * 1000) + 50),
+  radius: Math.floor((Math.random() * 10) + 5),
+  direction: { dirX: (Math.random() * 2), dirY: (Math.random() * 2) }
+}))
 
-grid[0] = new Circle({ id:0,
-            x: 100,
-            y: 100,
-            radius: 30,
-            direction: { dirX: 1, dirY: 0 } })
-
-grid[1] = new Circle({ id: 1,
-            x: 170,
-            y: 100,
-            radius: 30,
-            direction: { dirX: -1, dirY: 0 } })
+// grid[0] = new Circle({ id:0,
+//             x: 100,
+//             y: 100,
+//             radius: 30,
+//             direction: { dirX: 1, dirY: 0 } })
+//
+// grid[1] = new Circle({ id: 1,
+//             x: 170,
+//             y: 100,
+//             radius: 30,
+//             direction: { dirX: -1, dirY: 0 } })
 
 
 
@@ -104,17 +104,17 @@ function animate () {
 
   // console.log(grid[0])
 
-  grid[0].move(grid)
-  grid[0].render(canvas, ctx)
+  // grid[0].move(grid)
+  // grid[0].render(canvas, ctx)
+  //
+  // grid[1].move(grid)
+  // grid[1].render(canvas, ctx)
 
-  grid[1].move(grid)
-  grid[1].render(canvas, ctx)
-
-  // grid.forEach((circle) => {
-  //   // console.log(circle)
-  //   circle.move(grid)
-  //   circle.render(canvas, ctx)
-  // })
+  grid.forEach((circle) => {
+    // console.log(circle)
+    circle.move(grid)
+    circle.render(canvas, ctx)
+  })
 }
 
 // animate()
