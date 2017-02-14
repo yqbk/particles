@@ -2,6 +2,9 @@
 
 ## Description
 Animation of particles
+
+## Demo
+[here](http://codepen.io/yqbk/pen/bgZGBO)
  
 ## Run
 1. npm install
