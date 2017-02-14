@@ -73,6 +73,8 @@
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _test = __webpack_require__(1);
@@ -91,19 +93,32 @@ var ctx = canvas.getContext('2d');
 var width = window.innerWidth; // eslint-disable-line
 var height = window.innerHeight; // eslint-disable-line
 
+var linkDistance = 150;
+var linkThickness = 30;
+var animationSpeed = 0.3;
+
 ctx.canvas.width = width;
 ctx.canvas.height = height;
 
 ctx.imageSmoothingEnabled = true;
 ctx.strokeStyle = '#ff8ea8';
-ctx.lineWidth = 3;
+
+function calculateDistance(c1, c2) {
+  var a = c1.x + c1.direction.dirX - (c2.x + c2.direction.dirX);
+  var b = c1.y + c1.direction.dirY - (c2.y + c2.direction.dirY);
+  return Math.sqrt(a * a + b * b);
+}
 
 function detectCollision(c1, c2) {
+  return calculateDistance(c1, c2) <= c1.radius + c2.radius;
+}
+
+function detectLink(c1, c2) {
   var a = c1.x + c1.direction.dirX - (c2.x + c2.direction.dirX);
   var b = c1.y + c1.direction.dirY - (c2.y + c2.direction.dirY);
   var distance = Math.sqrt(a * a + b * b);
 
-  return distance <= c1.radius + c2.radius;
+  return calculateDistance(c1, c2) <= c1.radius + c2.radius + linkDistance;
 }
 
 var Circle = function () {
@@ -134,6 +149,16 @@ var Circle = function () {
       this.direction.dirY = -this.direction.dirY;
     }
   }, {
+    key: 'drawLink',
+    value: function drawLink(c1, c2) {
+      // ctx.lineWidth = 1
+      ctx.lineWidth = linkThickness / calculateDistance(c1, c2);
+      ctx.beginPath();
+      ctx.moveTo(c1.x, c1.y);
+      ctx.lineTo(c2.x, c2.y);
+      ctx.stroke();
+    }
+  }, {
     key: 'move',
     value: function move(grid) {
       var _this = this;
@@ -150,6 +175,9 @@ var Circle = function () {
             _this.changeDirectionX();
             _this.changeDirectionY();
           }
+          if (detectLink(circle, _this)) {
+            _this.drawLink(_this, circle);
+          }
         }
       });
 
@@ -162,6 +190,11 @@ var Circle = function () {
         this.changeDirectionY();
       }
       this.y += moveY;
+
+      ctx.lineWidth = 3;
+      // ctx.fillStyle = 'black'
+      // ctx.fill()
+      this.render(canvas, ctx);
     }
   }, {
     key: 'render',
@@ -175,44 +208,70 @@ var Circle = function () {
   return Circle;
 }();
 
-var grid = [];
+// const grid = []
 
-// const grid = _.range(0, 30).map(number => new Circle({
-//   id: number,
-//   x: Math.floor((Math.random() * 1000) + 50),
-//   y: Math.floor((Math.random() * 1000) + 50),
-//   radius: Math.floor((Math.random() * 10) + 5),
-//   direction: { dirX: 1, dirY: 0 }
-// }))
+function createCircle(number) {
+  return new Circle({
+    id: number,
+    x: Math.floor(Math.random() * 1000 + 50),
+    y: Math.floor(Math.random() * 1000 + 50),
+    radius: Math.floor(Math.random() * 10 + 5),
+    direction: { dirX: Math.random() * animationSpeed, dirY: Math.random() * animationSpeed }
+  });
+}
 
-grid[0] = new Circle({ id: 0,
-  x: 100,
-  y: 100,
-  radius: 30,
-  direction: { dirX: 1, dirY: 0 } });
+function generateGrid(elements) {
+  var grid = _lodash2.default.range(0, elements);
 
-grid[1] = new Circle({ id: 1,
-  x: 170,
-  y: 100,
-  radius: 30,
-  direction: { dirX: -1, dirY: 0 } });
+  grid.forEach(function (element) {
+    var id = element;
+    var circle = createCircle(id);
+
+    grid.forEach(function (check) {
+      if (check !== circle && (typeof check === 'undefined' ? 'undefined' : _typeof(check)) === 'object') {
+        while (detectCollision(circle, check)) {
+          circle = createCircle(id);
+        }
+      }
+    });
+
+    grid[id] = circle;
+  });
+
+  return grid;
+}
+
+var grid = generateGrid(30);
+
+// grid[0] = new Circle({ id:0,
+//             x: 100,
+//             y: 100,
+//             radius: 30,
+//             direction: { dirX: 1, dirY: 0 } })
+//
+// grid[1] = new Circle({ id: 1,
+//             x: 170,
+//             y: 100,
+//             radius: 30,
+//             direction: { dirX: -1, dirY: 0 } })
+
+console.log(grid);
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // console.log(grid[0])
 
-  grid[0].move(grid);
-  grid[0].render(canvas, ctx);
+  // grid[0].move(grid)
+  // grid[0].render(canvas, ctx)
+  //
+  // grid[1].move(grid)
+  // grid[1].render(canvas, ctx)
 
-  grid[1].move(grid);
-  grid[1].render(canvas, ctx);
-
-  // grid.forEach((circle) => {
-  //   // console.log(circle)
-  //   circle.move(grid)
-  //   circle.render(canvas, ctx)
-  // })
+  grid.forEach(function (circle) {
+    // console.log(circle)
+    circle.move(grid);
+  });
 }
 
 // animate()

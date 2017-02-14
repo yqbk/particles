@@ -25,7 +25,7 @@ function calculateDistance (c1, c2) {
 }
 
 function detectCollision (c1, c2) {
-  return calculateDistance(c1,c2) <= c1.radius + c2.radius
+  return calculateDistance(c1, c2) <= c1.radius + c2.radius
 }
 
 function detectLink (c1, c2) {
@@ -33,7 +33,7 @@ function detectLink (c1, c2) {
   const b = (c1.y + c1.direction.dirY) - (c2.y + c2.direction.dirY)
   const distance = Math.sqrt((a * a) + (b * b))
 
-  return calculateDistance(c1,c2) <= c1.radius + c2.radius + linkDistance
+  return calculateDistance(c1, c2) <= c1.radius + c2.radius + linkDistance
 }
 
 
@@ -56,7 +56,7 @@ class Circle {
 
   drawLink (c1, c2) {
     // ctx.lineWidth = 1
-    ctx.lineWidth = linkThickness / calculateDistance(c1,c2)
+    ctx.lineWidth = linkThickness / calculateDistance(c1, c2)
     ctx.beginPath()
     ctx.moveTo(c1.x, c1.y)
     ctx.lineTo(c2.x, c2.y)
@@ -108,13 +108,41 @@ class Circle {
 
 // const grid = []
 
-const grid = _.range(0, 30).map(number => new Circle({
-  id: number,
-  x: Math.floor((Math.random() * 1000) + 50),
-  y: Math.floor((Math.random() * 1000) + 50),
-  radius: Math.floor((Math.random() * 10) + 5),
-  direction: { dirX: Math.random() * animationSpeed, dirY: Math.random() * animationSpeed}
-}))
+function createCircle (number) {
+  return new Circle({
+    id: number,
+    x: Math.floor((Math.random() * 1000) + 50),
+    y: Math.floor((Math.random() * 1000) + 50),
+    radius: Math.floor((Math.random() * 10) + 5),
+    direction: { dirX: Math.random() * animationSpeed, dirY: Math.random() * animationSpeed }
+  })
+}
+
+
+function generateGrid (elements) {
+  const grid = _.range(0, elements)
+
+  grid.forEach((element) => {
+    const id = element
+    let circle = createCircle(id)
+
+    grid.forEach((check) => {
+      if (check !== circle && typeof check === 'object') {
+        while (detectCollision(circle, check)) {
+          circle = createCircle(id)
+        }
+      }
+    })
+
+    grid[id] = circle
+
+  })
+
+
+  return grid
+}
+
+const grid = generateGrid(30)
 
 // grid[0] = new Circle({ id:0,
 //             x: 100,
@@ -127,6 +155,8 @@ const grid = _.range(0, 30).map(number => new Circle({
 //             y: 100,
 //             radius: 30,
 //             direction: { dirX: -1, dirY: 0 } })
+
+console.log(grid)
 
 
 function animate () {
